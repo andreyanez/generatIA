@@ -1,6 +1,6 @@
 import { FormEvent, useState } from 'react';
 import { Spinner } from './components/Spinner';
-
+import { generateImage } from './api';
 type FormProps = {
 	prompt: string;
 	size: string;
@@ -15,29 +15,12 @@ function App() {
 
 	async function handleSubmit(e: FormEvent) {
 		e.preventDefault();
+
+		setisLoading(true);
+
 		try {
-			setisLoading(true);
-
-			const response = await fetch('http://localhost:8080/openai/image/generate', {
-				method: 'POST',
-				headers: {
-					'Content-Type': 'application/json',
-				},
-				body: JSON.stringify({
-					prompt,
-					size,
-				}),
-			});
-
-			if (!response.ok) {
-				setisLoading(false);
-				throw new Error('That image could not be generated');
-			}
-
-			const data = await response.json();
-
+			const data = await generateImage(prompt, size);
 			setOutput(data.data);
-
 			setisLoading(false);
 		} catch (error) {
 			console.log(error);
